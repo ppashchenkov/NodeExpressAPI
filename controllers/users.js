@@ -12,9 +12,10 @@ export const postUsers = (req, res) => {
 
     //create user
     const user = req.body;
-    users.push({...user, id: uuid()});
+    const userId = uuid();
+    users.push({...user, id: userId});
 
-    res.send("User created successfully.");
+    res.send([{UserID: userId }]);
 } ;
 
 export const getUserById = (req, res) => {
