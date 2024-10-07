@@ -16,7 +16,7 @@ export const postUsers = (req, res) => {
     const userId = uuid();
     users.push({...user, id: userId});
 
-    res.send([{UserID: userId }]);
+    res.send([{id: userId }]);
 } ;
 
 export const getUserById = (req, res) => {
