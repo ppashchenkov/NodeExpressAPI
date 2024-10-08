@@ -1,17 +1,17 @@
 class Log {
-    info = text => {
+    static info = text => {
         console.info(getData(), "[INFO]", text)
     }
-    warning= text => {
+    static warning= text => {
         console.info(getData(), "[WARNING]", text)
     }
-    error= text => {
+    static error= text => {
         console.info(getData(), "[ERROR]", text)
     }
-    fatal= text => {
+    static fatal= text => {
         console.info(getData(), "[FATAL]", text)
     }
-    server= text => {
+    static server= text => {
         console.info(getData(), "[SERVER]", text)
     }
     // runner
@@ -23,5 +23,6 @@ function getData() {
     return  date.toLocaleString('en-US',
         { timeZoneName: 'short' })
 }
-const log = new Log()
-export default log
+// const log = new Log()
+export default Log
+
