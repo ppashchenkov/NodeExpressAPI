@@ -25,4 +25,3 @@ function getData() {
 }
 // const log = new Log()
 export default Log
-
