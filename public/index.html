@@ -8,11 +8,11 @@
             rel="stylesheet"
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
             crossorigin="anonymous">
-    <link rel="stylesheet" href="css/users.css">
-    <script src="scripts/script.js" defer></script>
+    <link rel="stylesheet" href="users.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <h1 class="text-center">Node Express API Server App</h1>
+    <h1 class="text-center" id="appName"></h1>
     <div class="container">
         <ul class="nav d-flex justify-content-center">
             <li class="nav-item">
@@ -40,9 +40,9 @@
                        placeholder="Enter first name">
             </div>
             <div class="form-group">
-                <label for="lasttname">Last Name</label>
+                <label for="lastname">Last Name</label>
                 <input type="text" class="form-control"
-                       id="lasttname"
+                       id="lastname"
                        placeholder="Enter last name">
             </div>
             <div class="form-group">
@@ -52,7 +52,7 @@
                        placeholder="Enter age ( 1 - 150 )">
             </div>
             <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary mb-4 p-2" disabled>Add</button>
+                <button type="submit" class="btn btn-primary mb-4 p-2" id="addButton" disabled>Add</button>
             </div>
 
         </form>
@@ -69,30 +69,9 @@
                 <th scope="col">ID</th>
             </tr>
             </thead>
-            <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>33</td>
-                <td>34354545566564</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>45</td>
-                <td>34354545566564</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>18</td>
-                <td>34354545566564</td>
-            </tr>
-            </tbody>
+            <tbody id="usersList"></tbody>
         </table>
     </div>
 </body>
 </html>
+
