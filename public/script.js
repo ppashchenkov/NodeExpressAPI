@@ -28,7 +28,7 @@ const usersList = document.getElementById('usersList')
 // ]
 //JSON -> Object
 // const storedUsers = JSON.parse(JSON.stringify(usersFromData))
-let rowNumber = 1
+let rowNumber = 0
 let usersCurrent = []
 let id
 
@@ -68,16 +68,25 @@ class UI {
 
     static async displayUsers() {
         // const users = storedUsers //Mock data
+        rowNumber = 1
         const users = await UserService.getUsers() //API call GET users
-
+        if (usersCurrent.length > 0) {
+            const trs = document.getElementsByTagName("tr")
+            for (let i = usersCurrent.length; i > 0 ; i--) {
+                trs[i].remove()
+            }
+        }
         if (users.length) {
             users.forEach((user) => {
-                if (!usersCurrent.find((e) => e.id === user.id)) {
-                    UI.addUserToList(user)
-                }
+                UI.addUserToList(user)
             })
         }
+        console.log("84 USERS_LENGTH = ", users.length)
+        if (users.length) {
             usersCurrent = users
+        } else {
+            usersCurrent = []
+        }
     }
 
     static async createUser() {
