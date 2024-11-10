@@ -4,6 +4,7 @@ const lastNameInput = document.getElementById('lastname')
 const ageInput = document.getElementById('age')
 const addButton = document.getElementById('addButton')
 const usersList = document.getElementById('usersList')
+const form = document.getElementById('form-user')
 
 //mock data
 // const usersFromData = [
@@ -61,6 +62,7 @@ class UI {
 
     static activateAddButton() {
         const isValid = UI.isFormValid()
+
         console.log("isValid = ", isValid)
 
         addButton.disabled = !isValid
@@ -74,6 +76,7 @@ class UI {
             const trs = document.getElementsByTagName("tr")
             for (let i = usersCurrent.length; i > 0 ; i--) {
                 trs[i].remove()
+                console.log("CLEARINGGGGGGGGG_____________________________")
             }
         }
         if (users.length) {
@@ -95,8 +98,15 @@ class UI {
             const lastName = lastNameInput.value.trim()
             const age = ageInput.value
             id = await UserService.postUsers(firstName, lastName, age)
+            let newUser = {}
+
+            newUser = new User(firstName, lastName, age, id)
+            console.log("Object of class User (OOP): ", newUser);
+
+            return newUser
         }
     }
+
 
     static addUserToList(user) {
         const row = document.createElement('tr')
@@ -158,27 +168,34 @@ class UserService {
     }
 
     static async postUsers(firstName, lastName, age) {
+        if (!firstName || !lastName || age === undefined) {
+            console.error("[ERROR] Invalid parameters.")
+            throw new Error("Invalid parameters.");
+        }
+
         try {
             const response = await fetch(
-                "http://localhost:5000/api/users", {
+                "http://localhost:5000/api/users",
+                {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
+                    body: JSON.stringify(
+                        {
                         firstName: firstName,
                         lastName: lastName,
                         age: age
-                    })
+                        }
+                    )
                 })
+
             if (response.status !== 200) {
                 console.error("[ERROR] Response status:", response.status);
                 throw new Error("Failed to post users.");
             }
 
             const contentType = response.headers.get('Content-Type');
-
-            console.log("177 - Content-Type = ", contentType)
 
             if (contentType.includes('application/json')) {
 
@@ -196,14 +213,31 @@ class UserService {
 }
 //event to show App Name
 document.addEventListener('DOMContentLoaded', UI.displayAppName)
+
 //event to activate addButton
 document.addEventListener('input', UI.activateAddButton)
+
 //event to display users
 document.addEventListener("DOMContentLoaded", UI.displayUsers)
+
 // event to add user to DB, get user id, create user as Object
-document.getElementById("form-user")
-    .addEventListener('submit', async (event) =>{
-        event.preventDefault()
-        await UI.createUser()
-        await UI.displayUsers()
-    })
+// find specific user, create user as an object,
+// and display specific user in a table
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const user = await UI.createUser();
+    UI.addUserToList(user);
+
+    form.reset();
+    addButton.disabled = true;
+})
+// document.getElementById("form-user")
+//     .addEventListener('submit', async (event) =>{
+//         event.preventDefault()
+//         await UI.createUser()
+//         await UI.displayUsers()
+//         // form.reset()
+//         // addButton.disabled = true
+//     })
