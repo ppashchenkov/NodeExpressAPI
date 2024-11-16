@@ -3,9 +3,11 @@ const firstNameInput = document.getElementById('firstname')
 const lastNameInput = document.getElementById('lastname')
 const ageInput = document.getElementById('age')
 const addButton = document.getElementById('addButton')
+const searchButton = document.getElementById('searchButton')
 const usersList = document.getElementById('usersList')
-const form = document.getElementById('form-user')
-
+const formAdd = document.getElementById('form-user')
+const formSearch = document.getElementById('form-search')
+const userIdInput = document.getElementById('userId')
 //mock data
 // const usersFromData = [
 //     {
@@ -123,6 +125,78 @@ class UI {
         rowNumber++
     }
 
+    static getSearchCriteria() {
+        const userIDValue = userIdInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
+        const firstNameValue = firstNameInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
+        const lastNameValue = lastNameInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
+        const ageValue = ageInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
+
+        if (userIDValue.length || firstNameValue.length || lastNameValue.length || ageValue.length !== -1) {
+            return {
+                'userId': userIDValue,
+                'firstName': firstNameValue,
+                'lastName': lastNameValue,
+                'age': ageValue
+            }
+        }
+        return {}
+    }
+
+    static isSearchCriteriaValid(searchCriteria) {
+        return Object.keys(searchCriteria).length > 0
+    }
+
+    static activateSearchButton() {
+        const searchCriteria = UI.getSearchCriteria()
+        console.log("searchCriteria", searchCriteria)
+
+        // const isSearchCriteriaValid = UI.isSearchCriteriaValid(searchCriteria)
+        if (UI.isSearchCriteriaValid(searchCriteria)) {
+            searchButton.disabled = false
+        }
+    }
+
+    static preventSearchUrl() {
+        if (window.location.pathname === '/search?') {
+            window.history.pushState({}, '', '/search')
+        }
+    }
+
+    static async searchUsers() {
+        const searchCriteria = UI.getSearchCriteria()
+        if((UI.isSearchCriteriaValid(searchCriteria))) {
+            const users = await UserService.getUsers() || {}
+            console.log("Users = ", users)
+
+
+            usersList.innerHTML = ''
+            let searchResultRowNumber = 1
+
+            users.forEach((user) => {
+                if (user.id === searchCriteria.userId
+                    || user.firstName === searchCriteria.firstName
+                    || user.lastName === searchCriteria.lastName
+                    || user.age === searchCriteria.age
+                ) {
+                    const foundUser = new User(user.firstName, user.lastName, user.age, user.id)
+                    console.log("FoundUser = ", foundUser)
+
+                    const row = document.createElement('tr')
+
+                    row.innerHTML = `
+                    <th scope="row">${searchResultRowNumber}</th>
+                    <td>${user.firstName}</td>
+                    <td>${user.lastName}</td>
+                    <td>${user.age}</td>
+                    <td>${user.id}</td>
+                `
+
+                    usersList.appendChild(row)
+                    searchResultRowNumber++
+                }
+            })
+        }
+    }
 }
 
 class AppService {
@@ -214,30 +288,39 @@ class UserService {
 //event to show App Name
 document.addEventListener('DOMContentLoaded', UI.displayAppName)
 
-//event to activate addButton
-document.addEventListener('input', UI.activateAddButton)
-
 //event to display users
 document.addEventListener("DOMContentLoaded", UI.displayUsers)
 
-// event to add user to DB, get user id, create user as Object
+
+if (formAdd !== null) {
+    //event to activate addButton
+    formAdd.addEventListener('input', UI.activateAddButton)
+
+    // event to add user to DB, get user id, create user as Object
 // find specific user, create user as an object,
 // and display specific user in a table
 
-form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+    formAdd.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    const user = await UI.createUser();
-    UI.addUserToList(user);
+        const user = await UI.createUser();
+        UI.addUserToList(user);
 
-    form.reset();
-    addButton.disabled = true;
-})
-// document.getElementById("form-user")
-//     .addEventListener('submit', async (event) =>{
-//         event.preventDefault()
-//         await UI.createUser()
-//         await UI.displayUsers()
-//         // form.reset()
-//         // addButton.disabled = true
-//     })
+        form.reset();
+        addButton.disabled = true;
+    })
+}
+
+if (formSearch !== null) {
+    formSearch.addEventListener('input', UI.activateSearchButton)
+
+    formSearch.addEventListener('submit', async (event) => {
+        event.preventDefault()
+        UI.preventSearchUrl()
+
+        await UI.searchUsers()
+
+        formSearch.reset
+        searchButton.disabled = true
+    })
+}

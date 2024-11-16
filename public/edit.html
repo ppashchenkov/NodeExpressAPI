@@ -12,6 +12,7 @@
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
             crossorigin="anonymous">
     <link rel="stylesheet" href="users.css">
+    <script src="table.js" defer></script>
     <script src="script.js" defer></script>
 </head>
 <body>
@@ -36,7 +37,7 @@
 
     <h2 class="text-center">Edit user</h2>
     <div class="container">
-        <form class="border border-secondary" id="form-user">
+        <form class="border border-secondary" id="form-edit">
             <div class="form-group">
                 <label for="userId">User ID</label>
                 <input type="text" class="form-control"
@@ -68,21 +69,7 @@
         </form>
     </div>
 
-    <h2 class="text-center">Users List</h2>
-    <div class="container">
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Age</th>
-                <th scope="col">ID</th>
-            </tr>
-            </thead>
-            <tbody id="usersList"></tbody>
-        </table>
-    </div>
+    <div id="table"></div>
 </body>
 </html>
 
