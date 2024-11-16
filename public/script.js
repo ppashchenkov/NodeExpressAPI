@@ -2,35 +2,13 @@ const appName = document.getElementById('appName')
 const firstNameInput = document.getElementById('firstname')
 const lastNameInput = document.getElementById('lastname')
 const ageInput = document.getElementById('age')
+const userIdInput = document.getElementById('userId')
 const addButton = document.getElementById('addButton')
 const searchButton = document.getElementById('searchButton')
 const usersList = document.getElementById('usersList')
 const formAdd = document.getElementById('form-user')
 const formSearch = document.getElementById('form-search')
-const userIdInput = document.getElementById('userId')
-//mock data
-// const usersFromData = [
-//     {
-//         "firstName": "John",
-//         "lastName": "Doe",
-//         "age": 35,
-//         "id": "23232323"
-//     },
-//     {
-//         "firstName": "Jane",
-//         "lastName": "Doe",
-//         "age": 30,
-//         "id": "23232324"
-//     },
-//     {
-//         "firstName": "Johnny",
-//         "lastName": "Doe",
-//         "age": 5,
-//         "id": "23232325"
-//     }
-// ]
-//JSON -> Object
-// const storedUsers = JSON.parse(JSON.stringify(usersFromData))
+
 let rowNumber = 0
 let usersCurrent = []
 let id
@@ -64,7 +42,6 @@ class UI {
 
     static activateAddButton() {
         const isValid = UI.isFormValid()
-
         console.log("isValid = ", isValid)
 
         addButton.disabled = !isValid
@@ -86,7 +63,7 @@ class UI {
                 UI.addUserToList(user)
             })
         }
-        console.log("84 USERS_LENGTH = ", users.length)
+        console.log("66 USERS_LENGTH = ", users.length)
         if (users.length) {
             usersCurrent = users
         } else {
@@ -109,7 +86,6 @@ class UI {
         }
     }
 
-
     static addUserToList(user) {
         const row = document.createElement('tr')
 
@@ -127,11 +103,13 @@ class UI {
 
     static getSearchCriteria() {
         const userIDValue = userIdInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
-        const firstNameValue = firstNameInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
-        const lastNameValue = lastNameInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
-        const ageValue = ageInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
+        const firstNameValue = firstNameInput.value.trim().length > 0 ? firstNameInput.value.trim() : ''
+        const lastNameValue = lastNameInput.value.trim().length > 0 ? lastNameInput.value.trim() : ''
+        const ageValue = ageInput.value.trim().length > 0 ? ageInput.value.trim() : -1
 
-        if (userIDValue.length || firstNameValue.length || lastNameValue.length || ageValue.length !== -1) {
+        console.log("110 firstNameValue = ", firstNameValue)
+
+        if (userIDValue.length > 0 || firstNameValue.length > 0 || lastNameValue.length > 0 || ageValue.length !== -1) {
             return {
                 'userId': userIDValue,
                 'firstName': firstNameValue,
@@ -166,7 +144,8 @@ class UI {
         const searchCriteria = UI.getSearchCriteria()
         if((UI.isSearchCriteriaValid(searchCriteria))) {
             const users = await UserService.getUsers() || {}
-            console.log("Users = ", users)
+            console.log("145 Users = ", users)
+
 
 
             usersList.innerHTML = ''
@@ -200,14 +179,13 @@ class UI {
 }
 
 class AppService {
-    static getAppName() {
-        return fetch("http://localhost:5000/api/")
+    static async getAppName() {
+        return await fetch("http://localhost:5000/api/")
             .then(response =>{
                 if (response.status !== 200) {
                     console.log("[ERROR] response status: ", response.status)
                     throw new Error('Failed to fetch appName')
                 }
-
                 return response.text()
             })
             .catch(error => {
@@ -285,6 +263,7 @@ class UserService {
         }
     }
 }
+
 //event to show App Name
 document.addEventListener('DOMContentLoaded', UI.displayAppName)
 
@@ -306,7 +285,7 @@ if (formAdd !== null) {
         const user = await UI.createUser();
         UI.addUserToList(user);
 
-        form.reset();
+        formAdd.reset();
         addButton.disabled = true;
     })
 }
@@ -320,7 +299,7 @@ if (formSearch !== null) {
 
         await UI.searchUsers()
 
-        formSearch.reset
+        formSearch.reset()
         searchButton.disabled = true
     })
 }
