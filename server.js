@@ -20,6 +20,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(staticPath, 'index.html'))
 })
 app.get('/add', (req, res) => {
+    Log.info("GET request to endpoint '/add' received.");
+
     res.sendFile(path.join(staticPath, 'index.html'))
 })
 app.get('/search', (req, res) => {
@@ -31,11 +33,13 @@ app.get('/edit', (req, res) => {
 })
 
 app.get('/delete', (req, res) => {
+    Log.info("GET request to endpoint '/delete' received.");
+
     res.sendFile(path.join(staticPath, 'delete.html'))
 })
 
 app.get('/api/', (req, res) => {
-    log.info("GET request to endpoint '/' received.");
+    Log.info("GET request to endpoint '/' received.");
 
     res.send("Node Express API Server App");
 })
