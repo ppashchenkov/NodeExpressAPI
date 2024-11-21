@@ -5,9 +5,11 @@ const ageInput = document.getElementById('age')
 const userIdInput = document.getElementById('userId')
 const addButton = document.getElementById('addButton')
 const searchButton = document.getElementById('searchButton')
+const deleteButton = document.getElementById('deleteButton')
 const usersList = document.getElementById('usersList')
 const formAdd = document.getElementById('form-user')
 const formSearch = document.getElementById('form-search')
+const formDelete = document.getElementById('form-delete')
 
 let rowNumber = 0
 let usersCurrent = []
@@ -134,6 +136,16 @@ class UI {
         }
     }
 
+    static activateDeleteButton() {
+        const searchCriteria = UI.getSearchCriteria()
+        console.log("searchCriteria", searchCriteria)
+
+        // const isSearchCriteriaValid = UI.isSearchCriteriaValid(searchCriteria)
+        if (UI.isSearchCriteriaValid(searchCriteria)) {
+            deleteButton.disabled = false
+        }
+    }
+
     static preventSearchUrl() {
         if (window.location.pathname === '/search?') {
             window.history.pushState({}, '', '/search')
@@ -176,6 +188,44 @@ class UI {
             })
         }
     }
+
+    // static async deleteUser() {
+    //     console.log("193 DELETE BUTTON WAS PRESSED")
+    //     const searchCriteria = UI.getSearchCriteria()
+    //     if((UI.isSearchCriteriaValid(searchCriteria))) {
+    //         const users = await UserService.getUsers() || {}
+    //         console.log("145 Users = ", users)
+    //
+    //
+    //
+    //         usersList.innerHTML = ''
+    //         let searchResultRowNumber = 1
+    //
+    //         users.forEach((user) => {
+    //             if (user.id === searchCriteria.userId
+    //                 || user.firstName === searchCriteria.firstName
+    //                 || user.lastName === searchCriteria.lastName
+    //                 || user.age === searchCriteria.age
+    //             ) {
+    //                 const foundUser = new User(user.firstName, user.lastName, user.age, user.id)
+    //                 console.log("FoundUser = ", foundUser)
+    //
+    //                 const row = document.createElement('tr')
+    //
+    //                 row.innerHTML = `
+    //                 <th scope="row">${searchResultRowNumber}</th>
+    //                 <td>${user.firstName}</td>
+    //                 <td>${user.lastName}</td>
+    //                 <td>${user.age}</td>
+    //                 <td>${user.id}</td>
+    //             `
+    //
+    //                 usersList.appendChild(row)
+    //                 searchResultRowNumber++
+    //             }
+    //         })
+    //     }
+    // }
 }
 
 class AppService {
@@ -224,7 +274,6 @@ class UserService {
             console.error("[ERROR] Invalid parameters.")
             throw new Error("Invalid parameters.");
         }
-
         try {
             const response = await fetch(
                 "http://localhost:5000/api/users",
@@ -241,22 +290,39 @@ class UserService {
                         }
                     )
                 })
-
             if (response.status !== 200) {
                 console.error("[ERROR] Response status:", response.status);
                 throw new Error("Failed to post users.");
             }
-
             const contentType = response.headers.get('Content-Type');
-
             if (contentType.includes('application/json')) {
-
                 return await response.json().then((entries) => entries[0]['id'])
             } else {
                 console.error("[ERROR] Unexpected Content-Type: ", contentType);
                 throw new Error("Unexpected Content-Type.");
             }
+        } catch (error) {
+            console.error("fetch error", error)
+            throw error
+        }
+    }
 
+    static async deleteUser(userId) {
+        if (!userId === undefined) {
+            console.error("[ERROR] Invalid parameters.")
+            throw new Error("Invalid parameters.");
+        }
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/users/${userId}`,
+                {
+                    method: 'DELETE',
+                    },
+                )
+            if (response.status !== 200) {
+                console.error("[ERROR] Response status:", response.status);
+                throw new Error("Failed to delete users.");
+            }
         } catch (error) {
             console.error("fetch error", error)
             throw error
@@ -301,5 +367,22 @@ if (formSearch !== null) {
 
         formSearch.reset()
         searchButton.disabled = true
+    })
+}
+
+if (formDelete !== null) {
+    formDelete.addEventListener('input', UI.activateDeleteButton)
+
+    formDelete.addEventListener('submit', async (event) => {
+        event.preventDefault()
+        UI.preventSearchUrl()
+
+        console.log("380 DELETE BUTTON WAS PRESSED")
+        const userIDValue = userIdInput.value.trim()
+        await UserService.deleteUser(userIDValue)
+        await UI.displayUsers()
+
+        formDelete.reset()
+        deleteButton.disabled = true
     })
 }
