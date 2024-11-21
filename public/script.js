@@ -136,12 +136,27 @@ class UI {
         }
     }
 
+    static getDeleteCriteria() {
+        const userIDValue = userIdInput.value.trim().length > 0 ? userIdInput.value.trim() : ''
+
+        if (userIDValue.length > 0) {
+            return {
+                'userId': userIDValue,
+            }
+        }
+        return {}
+    }
+
+    static isDeleteCriteriaValid(DeleteCriteria) {
+        return Object.keys(DeleteCriteria).length > 0
+    }
+
     static activateDeleteButton() {
-        const searchCriteria = UI.getSearchCriteria()
-        console.log("searchCriteria", searchCriteria)
+        const DeleteCriteria = UI.getDeleteCriteria()
+        console.log("DeleteCriteria", DeleteCriteria)
 
         // const isSearchCriteriaValid = UI.isSearchCriteriaValid(searchCriteria)
-        if (UI.isSearchCriteriaValid(searchCriteria)) {
+        if (UI.isDeleteCriteriaValid(DeleteCriteria)) {
             deleteButton.disabled = false
         }
     }
