@@ -97,6 +97,20 @@ class UI {
             <td>${user.lastName}</td>
             <td>${user.age}</td>
             <td>${user.id}</td>
+            <td>
+                <i class="icon" id="editIcon">
+                    <aa href="/edit">
+                    
+                    </a>
+                </i>
+            </td>
+            <td>
+                <i class="icon" id="deleteIcon">
+                    <a href="/delete">
+                    
+                    </a>
+                </i>
+            </td>
         `;
 
         usersList.appendChild(row)
@@ -401,3 +415,13 @@ if (formDelete !== null) {
         deleteButton.disabled = true
     })
 }
+
+//any tab
+usersList.addEventListener('click', ())
+
+
+
+
+
+
+
