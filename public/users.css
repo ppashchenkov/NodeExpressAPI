@@ -14,3 +14,20 @@ h2 {
 .form-group {
     margin: 10px;
 }
+
+.icon {
+    cursor: pointer;
+}
+
+.icon a {
+    color: black;
+    text-decoration: none;
+}
+
+#editIcon a:hover {
+    color: green;
+}
+
+#deleteIcon a:hover {
+    color: red;
+}
