@@ -5,15 +5,18 @@ const ageInput = document.getElementById('age')
 const userIdInput = document.getElementById('userId')
 const addButton = document.getElementById('addButton')
 const searchButton = document.getElementById('searchButton')
+const editButton = document.getElementById('editButton')
 const deleteButton = document.getElementById('deleteButton')
 const usersList = document.getElementById('usersList')
 const formAdd = document.getElementById('form-user')
 const formSearch = document.getElementById('form-search')
+const formEdit = document.getElementById('form-edit')
 const formDelete = document.getElementById('form-delete')
 
 let rowNumber = 0
 let usersCurrent = []
 let id
+const defaultIdPlaceholder = "EnterUserId..."
 
 class User {
     constructor(firstName, lastName, age, id) {
@@ -235,6 +238,47 @@ class UI {
         return userInfo
     }
 
+    static setValuesToLocalStorage(user) {
+        if(user != null) {
+            localStorage.setItem("idValue", user.id)
+            localStorage.setItem("firstNameValue", user.firstName)
+            localStorage.setItem("lastNameValue", user.lastName)
+            localStorage.setItem("ageValue", user.age)
+
+        }
+    }
+
+    static clearLocalStorage() {
+        if(localStorage.getItem('idValue') !== null) {
+            localStorage.removeItem('idValue')
+        }
+        if(localStorage.getItem('firstNameValue') !== null) {
+            localStorage.removeItem('firstNameValue')
+        }
+        if(localStorage.getItem('lastNameValue') !== null) {
+            localStorage.removeItem('lastNameValue')
+        }
+        if(localStorage.getItem('ageValue') !== null) {
+            localStorage.removeItem('ageValue')
+        }
+    }
+
+    static activateEditButton() {
+        editButton.disabled = false
+    }
+
+    static fillPlaceholders() {
+        const id = localStorage.getItem('idValue')
+        const firstName = localStorage.getItem('firstNameValue')
+        const lastName = localStorage.getItem('lastNameValue')
+        const age = localStorage.getItem('ageValue')
+
+        userIdInput.placeholder = id ? id : defaultIdPlaceholder
+        firstNameInput.placeholder = firstName ? firstName : "Enter userFirstName"
+        lastNameInput.placeholder = lastName ? lastName : "Enter userLastName"
+        ageInput.placeholder = age ? age : "Enter age"
+    }
+
     // static async deleteUser() {
     //     console.log("193 DELETE BUTTON WAS PRESSED")
     //     const searchCriteria = UI.getSearchCriteria()
@@ -417,7 +461,7 @@ if (formSearch !== null) {
 }
 
 if (formDelete !== null) {
-    formDelete.addEventListener('input', UI.activateDeleteButton)
+        formDelete.addEventListener('input', UI.activateDeleteButton)
 
     formDelete.addEventListener('submit', async (event) => {
         event.preventDefault()
@@ -436,18 +480,36 @@ if (formDelete !== null) {
 //any tab
 usersList.addEventListener('click', (event) => {
     console.log(event.target)
-    if (event.target.classList('bi-pen') || event.target.classList('bi-trash')) {
+    if (event.target.classList.contains('bi-pen') || event.target.classList.contains('bi-trash')) {
         const userInfo = UI.getRowText(event)
         const copiedUser = new User(userInfo[0], userInfo[1], userInfo[2], userInfo[3])
 
         console.log("copiedUser = ", copiedUser)
+
+        UI.clearLocalStorage()
+        UI.setValuesToLocalStorage(copiedUser)
     }
 
 })
 
-
-
-
-
-
-
+if(formEdit !== null) {
+    document.addEventListener('DOMContentLoaded', () => {
+        UI.fillPlaceholders()
+        if(userIdInput.placeholder !== defaultIdPlaceholder) {
+            userIdInput.readOnly = true
+            userIdInput.disabled = true
+        }
+    })
+    firstNameInput.addEventListener('input', () => {
+        firstNameInput.style.backgroundColor = '#E8F0FE'
+        UI.activateEditButton()
+    })
+    lastNameInput.addEventListener('input', () => {
+        lastNameInput.style.backgroundColor = '#E8F0FE'
+        UI.activateEditButton()
+    })
+    ageInput.addEventListener('input', () => {
+        ageInput.style.backgroundColor = '#E8F0FE'
+        UI.activateEditButton()
+    })
+}
