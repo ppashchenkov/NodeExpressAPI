@@ -17,6 +17,9 @@ let rowNumber = 0
 let usersCurrent = []
 let id
 const defaultIdPlaceholder = "EnterUserId..."
+const defaultFirstNamePlaceholder = "Enter first name"
+const defaultLastNamePlaceholder = "Enter last name"
+const defaultAgePlaceholder = "Enter age ( 1 - 150 )"
 
 class User {
     constructor(firstName, lastName, age, id) {
@@ -173,15 +176,15 @@ class UI {
         return Object.keys(DeleteCriteria).length > 0
     }
 
-    static activateDeleteButton() {
-        const DeleteCriteria = UI.getDeleteCriteria()
-        console.log("DeleteCriteria", DeleteCriteria)
-
-        // const isSearchCriteriaValid = UI.isSearchCriteriaValid(searchCriteria)
-        if (UI.isDeleteCriteriaValid(DeleteCriteria)) {
-            deleteButton.disabled = false
-        }
-    }
+    // static activateDeleteButton() {
+    //     const DeleteCriteria = UI.getDeleteCriteria()
+    //     console.log("DeleteCriteria", DeleteCriteria)
+    //
+    //     // const isSearchCriteriaValid = UI.isSearchCriteriaValid(searchCriteria)
+    //     if (UI.isDeleteCriteriaValid(DeleteCriteria)) {
+    //         deleteButton.disabled = false
+    //     }
+    // }
 
     static preventSearchUrl() {
         if (window.location.pathname === '/search?') {
@@ -274,48 +277,30 @@ class UI {
         const age = localStorage.getItem('ageValue')
 
         userIdInput.placeholder = id ? id : defaultIdPlaceholder
-        firstNameInput.placeholder = firstName ? firstName : "Enter userFirstName"
-        lastNameInput.placeholder = lastName ? lastName : "Enter userLastName"
-        ageInput.placeholder = age ? age : "Enter age"
+        firstNameInput.placeholder = firstName ? firstName : defaultFirstNamePlaceholder
+        lastNameInput.placeholder = lastName ? lastName : defaultLastNamePlaceholder
+        ageInput.placeholder = age ? age : defaultAgePlaceholder
     }
 
-    // static async deleteUser() {
-    //     console.log("193 DELETE BUTTON WAS PRESSED")
-    //     const searchCriteria = UI.getSearchCriteria()
-    //     if((UI.isSearchCriteriaValid(searchCriteria))) {
-    //         const users = await UserService.getUsers() || {}
-    //         console.log("145 Users = ", users)
-    //
-    //
-    //
-    //         usersList.innerHTML = ''
-    //         let searchResultRowNumber = 1
-    //
-    //         users.forEach((user) => {
-    //             if (user.id === searchCriteria.userId
-    //                 || user.firstName === searchCriteria.firstName
-    //                 || user.lastName === searchCriteria.lastName
-    //                 || user.age === searchCriteria.age
-    //             ) {
-    //                 const foundUser = new User(user.firstName, user.lastName, user.age, user.id)
-    //                 console.log("FoundUser = ", foundUser)
-    //
-    //                 const row = document.createElement('tr')
-    //
-    //                 row.innerHTML = `
-    //                 <th scope="row">${searchResultRowNumber}</th>
-    //                 <td>${user.firstName}</td>
-    //                 <td>${user.lastName}</td>
-    //                 <td>${user.age}</td>
-    //                 <td>${user.id}</td>
-    //             `
-    //
-    //                 usersList.appendChild(row)
-    //                 searchResultRowNumber++
-    //             }
-    //         })
-    //     }
-    // }
+    static activateDeleteButton() {
+        if(userIdInput.placeholder !== defaultIdPlaceholder
+            && firstNameInput.placeholder !== defaultFirstNamePlaceholder
+            && lastNameInput.placeholder !== defaultLastNamePlaceholder
+            && ageInput.placeholder !== defaultAgePlaceholder
+        ) {
+            userIdInput.readOnly = true;
+            firstNameInput.readOnly = true;
+            lastNameInput.readOnly = true;
+            ageInput.readOnly = true;
+
+            userIdInput.disabled = true;
+            firstNameInput.disabled = true;
+            lastNameInput.disabled = true;
+            ageInput.disabled = true;
+
+            deleteButton.disabled = false;
+        }
+    }
 }
 
 class AppService {
@@ -428,12 +413,7 @@ document.addEventListener("DOMContentLoaded", UI.displayUsers)
 
 
 if (formAdd !== null) {
-    //event to activate addButton
     formAdd.addEventListener('input', UI.activateAddButton)
-
-    // event to add user to DB, get user id, create user as Object
-// find specific user, create user as an object,
-// and display specific user in a table
 
     formAdd.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -460,22 +440,22 @@ if (formSearch !== null) {
     })
 }
 
-if (formDelete !== null) {
-        formDelete.addEventListener('input', UI.activateDeleteButton)
-
-    formDelete.addEventListener('submit', async (event) => {
-        event.preventDefault()
-        UI.preventSearchUrl()
-
-        console.log("380 DELETE BUTTON WAS PRESSED")
-        const userIDValue = userIdInput.value.trim()
-        await UserService.deleteUser(userIDValue)
-        await UI.displayUsers()
-
-        formDelete.reset()
-        deleteButton.disabled = true
-    })
-}
+// if (formDelete !== null) {
+//         formDelete.addEventListener('input', UI.activateDeleteButton)
+//
+//     formDelete.addEventListener('submit', async (event) => {
+//         event.preventDefault()
+//         UI.preventSearchUrl()
+//
+//         console.log("380 DELETE BUTTON WAS PRESSED")
+//         const userIDValue = userIdInput.value.trim()
+//         await UserService.deleteUser(userIDValue)
+//         await UI.displayUsers()
+//
+//         formDelete.reset()
+//         deleteButton.disabled = true
+//     })
+// }
 
 //any tab
 usersList.addEventListener('click', (event) => {
@@ -489,7 +469,6 @@ usersList.addEventListener('click', (event) => {
         UI.clearLocalStorage()
         UI.setValuesToLocalStorage(copiedUser)
     }
-
 })
 
 if(formEdit !== null) {
@@ -511,5 +490,12 @@ if(formEdit !== null) {
     ageInput.addEventListener('input', () => {
         ageInput.style.backgroundColor = '#E8F0FE'
         UI.activateEditButton()
+    })
+}
+
+if(formDelete !== null) {
+    document.addEventListener('DOMContentLoaded', () => {
+        UI.fillPlaceholders();
+        UI.activateDeleteButton();
     })
 }
