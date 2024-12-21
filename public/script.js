@@ -55,27 +55,16 @@ class UI {
         addButton.disabled = !isValid
     }
 
-    static async displayUsers() {
-        // const users = storedUsers //Mock data
-        // rowNumber = 1
-        const users = await UserService.getUsers() //API call GET users
-        if (usersCurrent.length > 0) {
-            const trs = document.getElementsByTagName("tr")
-            for (let i = usersCurrent.length; i > 0 ; i--) {
-                trs[i].remove()
-                console.log("CLEARINGGGGGGGGG_____________________________")
-            }
-        }
-        if (users.length) {
+    static async  displayUsers() {
+        // const users = storedUsers //Mock data;
+        const users = await UserService.getUsers() || []; //API call GET users;
+
+        if(typeof users !== 'string' && users.length) {
             users.forEach((user) => {
-                UI.addUserToList(user, rowNumber)
+                // console.log('user = ', user);
+                UI.addUserToList(user, rowNumber);
+                rowNumber ++;
             })
-        }
-        console.log("66 USERS_LENGTH = ", users.length)
-        if (users.length) {
-            usersCurrent = users
-        } else {
-            usersCurrent = []
         }
     }
 
@@ -133,7 +122,7 @@ class UI {
         const lastNameValue = lastNameInput.value.trim().length > 0 ? lastNameInput.value.trim() : ''
         const ageValue = ageInput.value.trim().length > 0 ? ageInput.value.trim() : -1
 
-        console.log("110 firstNameValue = ", firstNameValue)
+        // console.log("110 firstNameValue = ", firstNameValue)
 
         if (userIDValue.length > 0 || firstNameValue.length > 0 || lastNameValue.length > 0 || ageValue.length !== -1) {
             return {
@@ -152,7 +141,7 @@ class UI {
 
     static activateSearchButton() {
         const searchCriteria = UI.getSearchCriteria()
-        console.log("searchCriteria", searchCriteria)
+        // console.log("searchCriteria", searchCriteria)
 
         // const isSearchCriteriaValid = UI.isSearchCriteriaValid(searchCriteria)
         if (UI.isSearchCriteriaValid(searchCriteria)) {
@@ -175,16 +164,6 @@ class UI {
         return Object.keys(DeleteCriteria).length > 0
     }
 
-    // static activateDeleteButton() {
-    //     const DeleteCriteria = UI.getDeleteCriteria()
-    //     console.log("DeleteCriteria", DeleteCriteria)
-    //
-    //     // const isSearchCriteriaValid = UI.isSearchCriteriaValid(searchCriteria)
-    //     if (UI.isDeleteCriteriaValid(DeleteCriteria)) {
-    //         deleteButton.disabled = false
-    //     }
-    // }
-
     static preventSearchUrl() {
         if (window.location.pathname === '/search?') {
             window.history.pushState({}, '', '/search')
@@ -195,7 +174,7 @@ class UI {
         const searchCriteria = UI.getSearchCriteria()
         if((UI.isSearchCriteriaValid(searchCriteria))) {
             const users = await UserService.getUsers() || {}
-            console.log("145 Users = ", users)
+            // console.log("145 Users = ", users)
 
             usersList.innerHTML = ''
             let searchResultRowNumber = 1
@@ -207,23 +186,10 @@ class UI {
                     || user.age === searchCriteria.age
                 ) {
                     const foundUser = new User(user.firstName, user.lastName, user.age, user.id)
-                    console.log("FoundUser = ", foundUser)
+                    // console.log("FoundUser = ", foundUser)
 
                     UI.addUserToList(foundUser, searchResultRowNumber)
                     searchResultRowNumber++
-
-                //     const row = document.createElement('tr')
-                //
-                //     row.innerHTML = `
-                //     <th scope="row">${searchResultRowNumber}</th>
-                //     <td>${user.firstName}</td>
-                //     <td>${user.lastName}</td>
-                //     <td>${user.age}</td>
-                //     <td>${user.id}</td>
-                // `
-                //
-                //     usersList.appendChild(row)
-                //     searchResultRowNumber++
                 }
             })
         }
@@ -431,7 +397,7 @@ class UserService {
     }
 
     static async patchUsers(user) {
-        if (!user.id) {
+        if (!user.id || (!user.firstName && !user.lastName && user.age === undefined)) {
             console.error("[ERROR] Invalid parameters.")
             throw new Error("Invalid parameters.");
         }
@@ -461,8 +427,8 @@ class UserService {
                 throw new Error("Failed to post users.");
             }
             const contentType = response.headers.get('Content-Type');
-            if (contentType.includes('application/json')) {
-                return await response.json().then((entries) => entries[0]['id'])
+            if (contentType.includes('text/html')) {
+                return await response.text();
             } else {
                 console.error("[ERROR] Unexpected Content-Type: ", contentType);
                 throw new Error("Unexpected Content-Type.");
@@ -489,8 +455,8 @@ class UserService {
                 throw new Error("Failed to post users.");
             }
             const contentType = response.headers.get('Content-Type');
-            if (contentType.includes('application/json')) {
-                return await response.json().then((entries) => entries[0]['id'])
+            if (contentType.includes('text/html')) {
+                return await response.text();
             } else {
                 console.error("[ERROR] Unexpected Content-Type: ", contentType);
                 throw new Error("Unexpected Content-Type.");
@@ -546,7 +512,7 @@ usersList.addEventListener('click', (event) => {
         const userInfo = UI.getRowText(event)
         const copiedUser = new User(userInfo[0], userInfo[1], userInfo[2], userInfo[3])
 
-        console.log("copiedUser = ", copiedUser)
+        // console.log("copiedUser = ", copiedUser)
 
         UI.clearLocalStorage()
         UI.setValuesToLocalStorage(copiedUser)
@@ -576,6 +542,7 @@ if(formEdit !== null) {
 
     editButton.addEventListener('click', async  () => {
         await UI.editUser()
+        console.log("545 CLEAR")
         UI.clearLocalStorage()
     })
 }
@@ -583,6 +550,7 @@ if(formEdit !== null) {
 if(formDelete !== null) {
     document.addEventListener('DOMContentLoaded', () => {
         UI.fillPlaceholders();
+        console.log("553 CLEAR")
         UI.activateDeleteButton();
     })
 
