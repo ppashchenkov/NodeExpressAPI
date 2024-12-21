@@ -36,6 +36,7 @@ input[readonly]::placeholder {
     color: darkgray;
 }
 
-/*input[readonly] {*/
-/*    background: gainsboro;*/
-/*}*/
+td a {
+    width: 100%;
+    display: block;
+}
