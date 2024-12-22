@@ -232,8 +232,10 @@ class UI {
         }
     }
 
-    static activateEditButton() {
-        editButton.disabled = false
+    static activateEditButton(str) {
+        if(str) {
+            editButton.disabled = false
+        }
     }
 
     static fillPlaceholders() {
@@ -525,24 +527,24 @@ if(formEdit !== null) {
         if(userIdInput.placeholder !== defaultIdPlaceholder) {
             userIdInput.readOnly = true
             userIdInput.disabled = true
+
+            firstNameInput.addEventListener('input', () => {
+                firstNameInput.style.backgroundColor = '#E8F0FE'
+                UI.activateEditButton(firstNameInput.value.trim())
+            })
+            lastNameInput.addEventListener('input', () => {
+                lastNameInput.style.backgroundColor = '#E8F0FE'
+                UI.activateEditButton(lastNameInput.value.trim())
+            })
+            ageInput.addEventListener('input', () => {
+                ageInput.style.backgroundColor = '#E8F0FE'
+                UI.activateEditButton(ageInput.value.trim())
+            })
         }
-    })
-    firstNameInput.addEventListener('input', () => {
-        firstNameInput.style.backgroundColor = '#E8F0FE'
-        UI.activateEditButton()
-    })
-    lastNameInput.addEventListener('input', () => {
-        lastNameInput.style.backgroundColor = '#E8F0FE'
-        UI.activateEditButton()
-    })
-    ageInput.addEventListener('input', () => {
-        ageInput.style.backgroundColor = '#E8F0FE'
-        UI.activateEditButton()
     })
 
     editButton.addEventListener('click', async  () => {
         await UI.editUser()
-        console.log("545 CLEAR")
         UI.clearLocalStorage()
     })
 }
@@ -550,7 +552,6 @@ if(formEdit !== null) {
 if(formDelete !== null) {
     document.addEventListener('DOMContentLoaded', () => {
         UI.fillPlaceholders();
-        console.log("553 CLEAR")
         UI.activateDeleteButton();
     })
 
