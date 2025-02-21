@@ -56,7 +56,6 @@ class UI {
     }
 
     static async  displayUsers() {
-        // const users = storedUsers //Mock data;
         const users = await UserService.getUsers() || []; //API call GET users;
 
         if(typeof users !== 'string' && users.length) {
@@ -231,9 +230,7 @@ class UI {
     }
 
     static activateEditButton(str) {
-        if(str) {
-            editButton.disabled = false
-        }
+        editButton.disabled = !str;
     }
 
     static fillPlaceholders() {
@@ -468,10 +465,8 @@ class UserService {
     }
 }
 
-//event to show App Name
 document.addEventListener('DOMContentLoaded', UI.displayAppName)
 
-//event to display users
 document.addEventListener("DOMContentLoaded", UI.displayUsers)
 
 if (formAdd !== null) {
@@ -505,14 +500,11 @@ if (formSearch !== null) {
     })
 }
 
-//any tab
 usersList.addEventListener('click', (event) => {
     console.log(event.target)
     if (event.target.classList.contains('bi-pen') || event.target.classList.contains('bi-trash')) {
         const userInfo = UI.getRowText(event)
         const copiedUser = new User(userInfo[0], userInfo[1], userInfo[2], userInfo[3])
-
-        // console.log("copiedUser = ", copiedUser)
 
         UI.clearLocalStorage()
         UI.setValuesToLocalStorage(copiedUser)
