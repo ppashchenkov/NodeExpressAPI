@@ -56,7 +56,6 @@ class UI {
     }
 
     static async  displayUsers() {
-        // const users = storedUsers //Mock data;
         const users = await UserService.getUsers() || []; //API call GET users;
 
         if(typeof users !== 'string' && users.length) {
@@ -141,11 +140,11 @@ class UI {
 
     static activateSearchButton() {
         const searchCriteria = UI.getSearchCriteria()
-        // console.log("searchCriteria", searchCriteria)
 
-        // const isSearchCriteriaValid = UI.isSearchCriteriaValid(searchCriteria)
         if (UI.isSearchCriteriaValid(searchCriteria)) {
             searchButton.disabled = false
+        }else {
+            searchButton.disabled = true
         }
     }
 
@@ -174,7 +173,6 @@ class UI {
         const searchCriteria = UI.getSearchCriteria()
         if((UI.isSearchCriteriaValid(searchCriteria))) {
             const users = await UserService.getUsers() || {}
-            // console.log("145 Users = ", users)
 
             usersList.innerHTML = ''
             let searchResultRowNumber = 1
@@ -186,7 +184,6 @@ class UI {
                     || user.age === searchCriteria.age
                 ) {
                     const foundUser = new User(user.firstName, user.lastName, user.age, user.id)
-                    // console.log("FoundUser = ", foundUser)
 
                     UI.addUserToList(foundUser, searchResultRowNumber)
                     searchResultRowNumber++
@@ -233,9 +230,7 @@ class UI {
     }
 
     static activateEditButton(str) {
-        if(str) {
-            editButton.disabled = false
-        }
+        editButton.disabled = !str;
     }
 
     static fillPlaceholders() {
@@ -318,7 +313,7 @@ class UserService {
     static getUsers() {
         return fetch("http://localhost:5000/api/users")
             .then(response => {
-                if (response.status !== 200) {
+                if (!response.ok) {
                     console.error("[ERROR] Response status: ", response.status)
                     throw new Error('Failed to fetch users.')
                 }
@@ -359,7 +354,7 @@ class UserService {
                         }
                     )
                 })
-            if (response.status !== 200) {
+            if (!response.ok) {
                 console.error("[ERROR] Response status:", response.status);
                 throw new Error("Failed to post users.");
             }
@@ -388,7 +383,7 @@ class UserService {
                     method: 'DELETE',
                     },
                 )
-            if (response.status !== 200) {
+            if (!response.ok) {
                 console.error("[ERROR] Response status:", response.status);
                 throw new Error("Failed to delete users.");
             }
@@ -424,7 +419,7 @@ class UserService {
                     },
                     body: JSON.stringify(body)
                 })
-            if (response.status !== 200) {
+            if (!response.ok) {
                 console.error("[ERROR] Response status:", response.status);
                 throw new Error("Failed to post users.");
             }
@@ -452,7 +447,7 @@ class UserService {
                 {
                     method: 'DELETE',
                 })
-            if (response.status !== 200) {
+            if (!response.ok) {
                 console.error("[ERROR] Response status:", response.status);
                 throw new Error("Failed to post users.");
             }
@@ -470,10 +465,8 @@ class UserService {
     }
 }
 
-//event to show App Name
 document.addEventListener('DOMContentLoaded', UI.displayAppName)
 
-//event to display users
 document.addEventListener("DOMContentLoaded", UI.displayUsers)
 
 if (formAdd !== null) {
@@ -507,14 +500,11 @@ if (formSearch !== null) {
     })
 }
 
-//any tab
 usersList.addEventListener('click', (event) => {
     console.log(event.target)
     if (event.target.classList.contains('bi-pen') || event.target.classList.contains('bi-trash')) {
         const userInfo = UI.getRowText(event)
         const copiedUser = new User(userInfo[0], userInfo[1], userInfo[2], userInfo[3])
-
-        // console.log("copiedUser = ", copiedUser)
 
         UI.clearLocalStorage()
         UI.setValuesToLocalStorage(copiedUser)
@@ -543,9 +533,11 @@ if(formEdit !== null) {
         }
     })
 
-    editButton.addEventListener('click', async  () => {
+    editButton.addEventListener('click', async  (event) => {
+        event.preventDefault()
         await UI.editUser()
         UI.clearLocalStorage()
+        window.location.reload()
     })
 }
 
@@ -555,8 +547,10 @@ if(formDelete !== null) {
         UI.activateDeleteButton();
     })
 
-    deleteButton.addEventListener('click', async  () => {
+    deleteButton.addEventListener('click', async  (event) => {
+        event.preventDefault()
         await UI.deleteUser()
         UI.clearLocalStorage()
+        window.location.reload()
     })
 }
