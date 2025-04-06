@@ -141,11 +141,7 @@ class UI {
     static activateSearchButton() {
         const searchCriteria = UI.getSearchCriteria()
 
-        if (UI.isSearchCriteriaValid(searchCriteria)) {
-            searchButton.disabled = false
-        }else {
-            searchButton.disabled = true
-        }
+        searchButton.disabled = !UI.isSearchCriteriaValid(searchCriteria);
     }
 
     static getDeleteCriteria() {
@@ -229,8 +225,8 @@ class UI {
         }
     }
 
-    static activateEditButton(str) {
-        editButton.disabled = !str;
+    static activateEditButton(isValid) {
+        editButton.disabled = !isValid;
     }
 
     static fillPlaceholders() {
@@ -243,6 +239,12 @@ class UI {
         firstNameInput.placeholder = firstName ? firstName : defaultFirstNamePlaceholder
         lastNameInput.placeholder = lastName ? lastName : defaultLastNamePlaceholder
         ageInput.placeholder = age ? age : defaultAgePlaceholder
+    }
+
+    static clearInputValues() {
+        firstNameInput.value = '';
+        lastNameInput.value = '';
+        ageInput.value = '';
     }
 
     static activateDeleteButton() {
@@ -511,33 +513,76 @@ usersList.addEventListener('click', (event) => {
     }
 })
 
+// if(formEdit !== null) {
+//     document.addEventListener('DOMContentLoaded', () => {
+//         UI.fillPlaceholders()
+//         if(userIdInput.placeholder !== defaultIdPlaceholder) {
+//             userIdInput.readOnly = true
+//             userIdInput.disabled = true
+//
+//             firstNameInput.addEventListener('input', () => {
+//                 firstNameInput.style.backgroundColor = '#E8F0FE'
+//                 UI.activateEditButton(firstNameInput.value.trim())
+//             })
+//             lastNameInput.addEventListener('input', () => {
+//                 lastNameInput.style.backgroundColor = '#E8F0FE'
+//                 UI.activateEditButton(lastNameInput.value.trim())
+//             })
+//             ageInput.addEventListener('input', () => {
+//                 ageInput.style.backgroundColor = '#E8F0FE'
+//                 UI.activateEditButton(ageInput.value.trim())
+//             })
+//         }
+//     })
+//
+//     editButton.addEventListener('click', async  (event) => {
+//         event.preventDefault()
+//         await UI.editUser()
+//         UI.clearLocalStorage()
+//         window.location.reload()
+//     })
+// }
+
 if(formEdit !== null) {
     document.addEventListener('DOMContentLoaded', () => {
-        UI.fillPlaceholders()
+        UI.fillPlaceholders();
         if(userIdInput.placeholder !== defaultIdPlaceholder) {
-            userIdInput.readOnly = true
-            userIdInput.disabled = true
-
-            firstNameInput.addEventListener('input', () => {
-                firstNameInput.style.backgroundColor = '#E8F0FE'
-                UI.activateEditButton(firstNameInput.value.trim())
-            })
-            lastNameInput.addEventListener('input', () => {
-                lastNameInput.style.backgroundColor = '#E8F0FE'
-                UI.activateEditButton(lastNameInput.value.trim())
-            })
-            ageInput.addEventListener('input', () => {
-                ageInput.style.backgroundColor = '#E8F0FE'
-                UI.activateEditButton(ageInput.value.trim())
-            })
+            userIdInput.readOnly = true;
+            userIdInput.disabled = true;
         }
     })
 
-    editButton.addEventListener('click', async  (event) => {
-        event.preventDefault()
-        await UI.editUser()
-        UI.clearLocalStorage()
-        window.location.reload()
+    let isValidFirstName = false;
+    let isValidLastName = false;
+    let isValidAge = false;
+
+    firstNameInput.addEventListener('input', () => {
+        firstNameInput.style.background = "#E8F0FE";
+        isValidFirstName = firstNameInput.value.trim().length > 0;
+    })
+
+    lastNameInput.addEventListener('input', () => {
+        lastNameInput.style.background = "#E8F0FE";
+        isValidLastName = lastNameInput.value.trim().length > 0;
+    })
+
+    ageInput.addEventListener('input', () => {
+        ageInput.style.background = "#E8F0FE";
+        isValidAge = ageInput.value.trim().length > 0;
+    })
+
+    formEdit.addEventListener('input', () => {
+        UI.activateEditButton(isValidFirstName || isValidLastName || isValidAge);
+    })
+
+
+    editButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+        await UI.editUser();
+        UI.clearLocalStorage();
+        UI.clearInputValues();
+        UI.fillPlaceholders();
+        window.location.reload();
     })
 }
 
