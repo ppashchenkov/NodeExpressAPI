@@ -298,7 +298,7 @@ class UI {
 
 class AppService {
     static async getAppName() {
-        return await fetch("http://localhost:5000/api/")
+        return await fetch("/api/")
             .then(response =>{
                 if (response.status !== 200) {
                     console.log("[ERROR] response status: ", response.status)
@@ -315,7 +315,7 @@ class AppService {
 
 class UserService {
     static getUsers() {
-        return fetch("http://localhost:5000/api/users")
+        return fetch("/api/users")
             .then(response => {
                 if (!response.ok) {
                     console.error("[ERROR] Response status: ", response.status)
@@ -344,7 +344,7 @@ class UserService {
         }
         try {
             const response = await fetch(
-                "http://localhost:5000/api/users",
+                "/api/users",
                 {
                     method: 'POST',
                     headers: {
@@ -382,7 +382,7 @@ class UserService {
         }
         try {
             const response = await fetch(
-                `http://localhost:5000/api/users/${userId}`,
+                `/api/users/${userId}`,
                 {
                     method: 'DELETE',
                     },
@@ -415,7 +415,7 @@ class UserService {
         console.log("BODY = ", body)
         try {
             const response = await fetch(
-                `http://localhost:5000/api/users/${user.id}`,
+                `/api/users/${user.id}`,
                 {
                     method: 'PATCH',
                     headers: {
@@ -447,7 +447,7 @@ class UserService {
         }
         try {
             const response = await fetch(
-                `http://localhost:5000/api/users/${id}`,
+                `/api/users/${id}`,
                 {
                     method: 'DELETE',
                 })
